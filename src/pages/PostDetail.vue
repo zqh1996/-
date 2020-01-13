@@ -33,12 +33,14 @@
             <i class="iconfont iconweixin"></i>
             <a href="https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html#1">微信</a>
         </span>
-        
     </div>
+   <PostFooter :post="detail" @handleStar="handleStar"></PostFooter>
   </div>
 </template>
 
 <script>
+// 导入页脚组件
+import PostFooter from"@/components/PostFooter"
 export default{
     data(){
         return {
@@ -48,6 +50,9 @@ export default{
                 user:{}
             }
         }
+    },
+    components:{
+       PostFooter
     },
     methods:{
         // 关注当前的作者
@@ -113,6 +118,29 @@ export default{
                 }
                 this.$toast.success(message);
            })
+        },
+        // 收藏
+        handleStar(){
+            // 通过文章id收藏
+            this.$axios({
+                url:"/post_star/"+this.detail.id,
+                    // 添加头信息
+                headers: {
+                    Authorization: localStorage.getItem("token")
+                }
+            }).then(res=>{
+                const {message} = res.data;
+                if(message === "收藏成功"){
+                    // 修改收藏的按钮的状态
+                    this.detail.has_star = true;
+                }
+                  if(message === "取消成功"){
+                    // 修改收藏的按钮的状态
+                    this.detail.has_star = false;
+                }
+                this.$toast.success(message)
+                
+            })
         }
 
     },
